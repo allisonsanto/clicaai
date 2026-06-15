@@ -55,7 +55,7 @@
 
     <script>
         document.getElementById("postForm").addEventListener("submit", async function(e) {
-            e.preventDefault(); // Impede a página de recarregar ou mudar de tela antes da hora
+            e.preventDefault(); // Impede o redirecionamento bruto da página
 
             const titulo = document.getElementById("titulo").value.trim();
             const conteudo = document.getElementById("conteudo").value.trim();
@@ -65,7 +65,6 @@
             erro.style.color = "red";
             erro.textContent = "";
 
-            // 1. Validações básicas no Front-end
             if (titulo.length < 3) {
                 erro.textContent = "O título precisa ter pelo menos 3 caracteres.";
                 return;
@@ -76,20 +75,14 @@
                 return;
             }
 
-            if (!categoria) {
-                erro.textContent = "Por favor, selecione uma categoria.";
-                return;
-            }
-
-            // 2. Cria o objeto FormData para capturar o texto e o arquivo de imagem automaticamente
+            // Captura todos os campos do formulário incluindo o arquivo de imagem automaticamente
             const formData = new FormData(this);
 
             try {
                 erro.style.color = "blue";
-                erro.textContent = "A publicar no banco de dados... Por favor, aguarde.";
+                erro.textContent = "Publicando no banco de dados... Aguarde.";
 
-                // 3. Mude de: fetch('https://link-do-render/receber-post')
-                // Para apenas:
+                // Rota relativa: envia para o próprio servidor do Render onde o site está rodando
                 const response = await fetch('/receber-post', {
                     method: 'POST',
                     body: formData
@@ -97,23 +90,18 @@
 
                 if (response.ok) {
                     erro.style.color = "green";
-                    erro.textContent = "Publicado com sucesso! A redirecionar...";
-
-                    // 4. REDIRECIONAMENTO DINÂMICO CONFORME A CATEGORIA SELECIONADA
+                    erro.textContent = "Postagem publicada com sucesso! Redirecionando...";
+                    
+                    // Redireciona dinamicamente para a página correspondente à categoria escolhida
                     setTimeout(() => {
                         window.location.href = `/${categoria}.html`;
-                    }, 1500); // Aguarda 1.5 segundos para o utilizador ver a mensagem de sucesso
-
+                    }, 1500);
                 } else {
-                    const textoErro = await response.text();
-                    erro.style.color = "red";
-                    erro.textContent = "Erro ao salvar no servidor: " + textoErro;
+                    erro.textContent = "Erro ao salvar a postagem no servidor.";
                 }
-
             } catch (error) {
                 console.error("Erro na requisição:", error);
-                erro.style.color = "red";
-                erro.textContent = "Não foi possível conectar ao servidor. O Node.js está rodando?";
+                erro.textContent = "Erro de conexão com o servidor.";
             }
         });
     </script>
