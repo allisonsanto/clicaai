@@ -16,7 +16,18 @@ const MONGO_URI = 'mongodb+srv://allisonsanto_db:krZ9VZhZley2GrAT@allisonsanto.j
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Permite receber imagens em Base64 grandes para o mapa
 app.use(express.urlencoded({ extended: true })); // Permite receber formulários normais (painel.html)
-app.use(express.static('public')); // Onde ficam seus arquivos HTML/CSS/JS (front-end)
+// 1. Diz ao Express onde estão os seus arquivos de Front-end (HTML, CSS, JS)
+// Se os seus HTMLs estiverem na raiz do projeto, use:
+app.use(express.static(path.join(__dirname, './'))); 
+
+// Se os seus HTMLs estiverem dentro de uma pasta chamada 'public', use:
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// 2. ROTA NOVA: Quando alguém acessar o link puro do Render, ele vai abrir a página inicial
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html')); 
+    // Se estiver em uma pasta: res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 app.use('/uploads', express.static('uploads')); // Torna as imagens salvas acessíveis via URL
 
 // =======================================================
