@@ -52,14 +52,15 @@
                     postElement.classList.add("card-post");
 
                     // Verifica se o documento do Mongo contém um caminho de imagem associado
-                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:80px; border-radius:8px; margin-bottom:15px;">` : '';
+                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100px; border-radius:8px; margin-bottom:15px;">` : '';
 
                     postElement.innerHTML = `
                         <h2>${post.titulo}</h2>
                         <small>Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}</small>
                         <p>${post.conteudo.replace(/\n/g, '<br>')}</p>
-                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
                         ${imgTag}
+                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+                        
                     `;
                     container.appendChild(postElement);
                 });
