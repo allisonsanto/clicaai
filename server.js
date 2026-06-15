@@ -5,6 +5,7 @@ const cors = require('cors');
 const multer = require('multer');
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
@@ -35,10 +36,17 @@ app.use('/uploads', express.static('uploads')); // Torna as imagens salvas acess
 // =======================================================
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); 
+        const dir = 'uploads/';
+        // Garante que o Render vai criar a pasta "uploads" na nuvem caso ela não exista!
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir); 
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+        // Remove espaços em branco do nome do arquivo para evitar links quebrados na web
+        const nomeLimpo = file.originalname.replace(/\s+/g, '-');
+        cb(null, Date.now() + '-' + nomeLimpo);
     }
 });
 const upload = multer({ storage: storage });
