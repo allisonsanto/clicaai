@@ -11,21 +11,17 @@
         <ul>
             <li><a href="index.html">Início</a></li>
             <li><a href="mapa.html">Mapa de Óbidos</a></li>
-            <li><a href="historias.html" class="active">Histórias</a></li>
+            <li><a href="historias.html">Histórias</a></li>
             <li><a href="cultural.html">Mapa Cultural</a></li>
             <li><a href="livros.html">Mapa de Livros</a></li>
         </ul>
     </nav>
 
     <main>
-        <section class="hero">
-            <div class="feed-container">
-                <h1>Histórias de Óbidos</h1>
-                
-                <div id="container-postagens">
-                    <p>A carregar histórias...</p>
-                </div>
-            </div>
+        <h1>Histórias de Óbidos</h1>
+        
+        <section class="hero" id="container-postagens">
+            <p style="color: #666;">Carregando histórias...</p>
         </section>
     </main>
 
@@ -34,7 +30,7 @@
             const container = document.getElementById("container-postagens");
             
             try {
-                // Procura as publicações da categoria 'historias' no servidor Node.js
+                // Rota relativa apontando para o servidor unificado do Render
                 const response = await fetch('/api/postagens/historias');
                 const postagens = await response.json();
 
@@ -43,31 +39,30 @@
                     return;
                 }
 
-                // Limpa o texto de carregamento
                 container.innerHTML = "";
 
-                // Renderiza cada publicação dinâmica vinda da base de dados
                 postagens.forEach(post => {
                     const postElement = document.createElement("article");
                     postElement.classList.add("card-post");
 
-                    // Verifica se o documento do Mongo contém um caminho de imagem associado
-                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; border-radius:8px; margin-bottom:15px;">` : '';
+                    // Monta a tag de imagem se houver imagem na publicação
+                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; border-radius:8px; margin-bottom:15px; display:block;">` : '';
 
                     postElement.innerHTML = `
                         <h2>${post.titulo}</h2>
-                        <small>Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}</small>
-                        <p>${post.conteudo.replace(/\n/g, '<br>')}</p>
+                        <small style="color: #666; display:block; margin-bottom:10px;">
+                            Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}
+                        </small>
                         ${imgTag}
+                        <p style="line-height: 1.6;">${post.conteudo.replace(/\n/g, '<br>')}</p>
                         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
-                        
                     `;
                     container.appendChild(postElement);
                 });
 
             } catch (error) {
                 console.error("Erro ao renderizar posts:", error);
-                container.innerHTML = "<p>Erro ao carregar as postagens.</p>";
+                container.innerHTML = "<p style='color: red;'>Erro ao carregar as postagens de histórias.</p>";
             }
         });
     </script>
