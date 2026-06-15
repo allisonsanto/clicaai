@@ -46,7 +46,16 @@
                     postElement.classList.add("card-post");
 
                     // Monta a tag de imagem se houver imagem na publicação
-                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; border-radius:8px; margin-bottom:15px; display:block;">` : '';
+                    // Procure por esta linha dentro do postagens.forEach no seu historias.html:
+                    // let imgTag = post.imagem ? `<img src="${post.imagem}" ...
+                    
+                    // E SUBSTITUA por este bloco corrigido:
+                    let imgTag = '';
+                    if (post.imagem) {
+                        // Garante que se o caminho começar com '/' ele pegue a raiz do servidor corretamente
+                        const caminhoImagem = post.imagem.startsWith('/') ? post.imagem : `/${post.imagem}`;
+                        imgTag = `<img src="${caminhoImagem}" alt="${post.titulo}" style="max-width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">`;
+                    }
 
                     postElement.innerHTML = `
                         <h2>${post.titulo}</h2>
