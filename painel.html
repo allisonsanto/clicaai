@@ -88,10 +88,11 @@
                 erro.style.color = "blue";
                 erro.textContent = "A publicar no banco de dados... Por favor, aguarde.";
 
-                // 3. Envia os dados para o servidor Node.js
-                const response = await fetch('http://localhost:3000/receber-post', {
+                // 3. Mude de: fetch('https://link-do-render/receber-post')
+                // Para apenas:
+                const response = await fetch('/receber-post', {
                     method: 'POST',
-                    body: formData // O FormData envia os dados no formato multipart/form-data exigido pelo Multer
+                    body: formData
                 });
 
                 if (response.ok) {
