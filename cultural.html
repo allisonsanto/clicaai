@@ -29,45 +29,36 @@
         </section>
     </main>
 
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", async () => {
             const container = document.getElementById("container-postagens");
-            
             try {
-                // Procura as publicações da categoria 'cultural' no servidor Node.js
+                // Alinhado para buscar a categoria 'cultural'
                 const response = await fetch('/api/postagens/cultural');
                 const postagens = await response.json();
 
                 if (postagens.length === 0) {
-                    container.innerHTML = "<p>Nenhuma postagem cadastrada nesta categoria.</p>";
+                    container.innerHTML = "<p>Nenhuma publicação cadastrada no Mapa Cultural.</p>";
                     return;
                 }
-
-                // Limpa o texto de carregamento
                 container.innerHTML = "";
-
-                // Renderiza cada publicação dinâmica vinda da base de dados
                 postagens.forEach(post => {
                     const postElement = document.createElement("article");
                     postElement.classList.add("card-post");
-
-                    // Verifica se o documento do Mongo contém um caminho de imagem associado
-                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; border-radius:8px; margin-bottom:15px;">` : '';
+                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; border-radius:8px; margin-bottom:15px; display:block;">` : '';
 
                     postElement.innerHTML = `
                         <h2>${post.titulo}</h2>
-                        <small>Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}</small>
-                        <p>${post.conteudo.replace(/\n/g, '<br>')}</p>
+                        <small style="color: #666; display:block; margin-bottom:10px;">Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}</small>
                         ${imgTag}
+                        <p style="line-height: 1.6;">${post.conteudo.replace(/\n/g, '<br>')}</p>
                         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
-                        
                     `;
                     container.appendChild(postElement);
                 });
-
             } catch (error) {
                 console.error("Erro ao renderizar posts:", error);
-                container.innerHTML = "<p>Erro ao carregar as postagens.</p>";
+                container.innerHTML = "<p style='color: red;'>Erro ao carregar as postagens culturais.</p>";
             }
         });
     </script>
