@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Portal Óbidos - Painel de Postagem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo"><img src="img/logo.png" style="width:100%; border-radius:4px">ÓBIDOS PA</div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="mapa.html">Mapa de Óbidos</a></li>
+            <li><a href="historias.html">Histórias</a></li>
+            <li><a href="cultural.html">Mapa Cultural</a></li>
+            <li><a href="livros.html">Mapa de Livros</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero">
+
+            <div class="painel">
+                <h2>NOVA POSTAGEM</h2>
+
+                <form id="postForm" enctype="multipart/form-data">
+                    
+                    <label for="titulo">Título da postagem</label>
+                    <input type="text" id="titulo" name="titulo" required minlength="3" maxlength="120">
+
+                    <label for="conteudo">Conteúdo</label>
+                    <textarea id="conteudo" name="conteudo" rows="8" required minlength="10"></textarea>
+
+                    <label for="imagem">Imagem da postagem (opcional)</label>
+                    <input type="file" id="imagem" name="imagem" accept="image/*">
+
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="">Selecione...</option>
+                        <option value="historias">Histórias</option>
+                        <option value="cultural">Mapa Cultural</option>
+                        <option value="livros">Mapa de Livros</option>
+                    </select>
+
+                    <button type="submit" style="margin-top:20px;">Publicar</button>
+
+                    <p id="erro" class="error" style="color: red; margin-top: 10px; font-weight: bold;"></p>
+                </form>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        document.getElementById("postForm").addEventListener("submit", async function(e) {
+            e.preventDefault(); // Impede a página de recarregar ou mudar de tela antes da hora
+
+            const titulo = document.getElementById("titulo").value.trim();
+            const conteudo = document.getElementById("conteudo").value.trim();
+            const categoria = document.getElementById("categoria").value;
+            const erro = document.getElementById("erro");
+
+            erro.style.color = "red";
+            erro.textContent = "";
+
+            // 1. Validações básicas no Front-end
+            if (titulo.length < 3) {
+                erro.textContent = "O título precisa ter pelo menos 3 caracteres.";
+                return;
+            }
+
+            if (conteudo.length < 10) {
+                erro.textContent = "O conteúdo precisa ter pelo menos 10 caracteres.";
+                return;
+            }
+
+            if (!categoria) {
+                erro.textContent = "Por favor, selecione uma categoria.";
+                return;
+            }
+
+            // 2. Cria o objeto FormData para capturar o texto e o arquivo de imagem automaticamente
+            const formData = new FormData(this);
+
+            try {
+                erro.style.color = "blue";
+                erro.textContent = "A publicar no banco de dados... Por favor, aguarde.";
+
+                // 3. Envia os dados para o servidor Node.js
+                const response = await fetch('http://localhost:3000/receber-post', {
+                    method: 'POST',
+                    body: formData // O FormData envia os dados no formato multipart/form-data exigido pelo Multer
+                });
+
+                if (response.ok) {
+                    erro.style.color = "green";
+                    erro.textContent = "Publicado com sucesso! A redirecionar...";
+
+                    // 4. REDIRECIONAMENTO DINÂMICO CONFORME A CATEGORIA SELECIONADA
+                    setTimeout(() => {
+                        window.location.href = `/${categoria}.html`;
+                    }, 1500); // Aguarda 1.5 segundos para o utilizador ver a mensagem de sucesso
+
+                } else {
+                    const textoErro = await response.text();
+                    erro.style.color = "red";
+                    erro.textContent = "Erro ao salvar no servidor: " + textoErro;
+                }
+
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                erro.style.color = "red";
+                erro.textContent = "Não foi possível conectar ao servidor. O Node.js está rodando?";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa de Óbidos - Satélite</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* CSS específico para garantir que o mapa apareça */
+        #map-container {
+            width: 100%;
+            height: 500px; /* Altura fixa é obrigatória */
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
+            margin-top: 20px;
+            z-index: 1; /* Garante que o mapa fique abaixo do menu se necessário */
+        }
+        #map { height: 100%; width: 100%; }
+        
+        .admin-panel {
+            background: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        input { padding: 8px; margin-right: 5px; border: 1px solid #ccc; }
+        button { padding: 8px 15px; background: #27ae60; color: white; border: none; cursor: pointer; }
+        button:hover { background: #2ecc71; }
+        .marker-list { background:#fff; padding:12px; margin-top:14px; border-radius:8px; border:1px solid #e0e0e0; }
+        .marker-list h2 { margin:0 0 8px 0; font-size:16px; }
+        .marker-item { display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f0; }
+        .marker-thumb { width:72px; height:54px; object-fit:cover; border-radius:6px; border:1px solid #ddd; }
+        .marker-meta { flex:1; }
+        .marker-actions { display:flex; gap:6px; }
+        .marker-actions button { padding:6px 8px; font-size:13px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><img src="img/logo.png" style="width:100%; border-radius:4px">ÓBIDOS PA</div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="mapa.html">Mapa de Óbidos</a></li>
+            <li><a href="historias.html">Histórias</a></li>
+            <li><a href="cultural.html">Mapa Cultural</a></li>
+            <li><a href="livros.html">Mapa de Livros</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Mapa de Satélite - Óbidos</h1>
+        
+        <div class="admin-panel">
+            <strong>Painel do Administrador:</strong><br><br>
+            <input type="file" id="imagem" name="imagem" accept="image/*">
+            <input type="text" id="titulo" placeholder="Nome do Local (ex: Forte Pauxis)">
+            <input type="text" id="info" placeholder="Descrição ou História">
+            <button onclick="ativarModoAdicionar()">Adicionar Ponto no Mapa</button>
+            <p><small>* Clique no botão acima e depois clique em qualquer lugar do mapa para marcar.</small></p>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+
+        <div id="marker-list" class="marker-list">
+            <h2>Pontos adicionados</h2>
+            <div id="lista"></div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Config API
+        const API = 'http://localhost:3000';
+
+        // 1. Inicializa o mapa nas coordenadas de Óbidos
+        const map = L.map('map').setView([-1.9187, -55.5185], 14);
+
+        // 2. Define a camada de Satélite (Esri World Imagery)
+        const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(map);
+
+        // Estado
+        let aguardandoClique = false;
+        let markersCache = []; // será carregado do servidor
+        const leafletMarkers = {};
+
+        function ativarModoAdicionar() {
+            const t = document.getElementById('titulo').value;
+            if(!t) {
+                alert("Por favor, digite um título antes de marcar o mapa.");
+                return;
+            }
+            aguardandoClique = true;
+            document.getElementById('map').style.cursor = 'crosshair';
+            alert("Modo de marcação ativado! Clique agora em um ponto no mapa.");
+        }
+
+        function criarPopupComImagem(titulo, info, imagemSrc) {
+            const imagemHtml = imagemSrc ? `<img src="${imagemSrc}" alt="${titulo}" style="width:280px; height:auto; margin-top:8px; border-radius:4px">` : '';
+            return `
+                <div style="max-width: 300px">
+                    <h3 style="margin:0">${titulo}</h3>
+                    <p style="font-size:12px; color:#666">${info}</p>
+                    ${imagemHtml}
+                </div>
+            `;
+        }
+
+        // === Integração com backend ===
+        async function fetchMarkersFromServer() {
+            try {
+                console.log('[client] GET', API + '/markers');
+                const res = await fetch(API + '/markers');
+                if (!res.ok) {
+                    console.error('[client] GET /markers failed', res.status, res.statusText);
+                    return;
+                }
+                const data = await res.json();
+                markersCache = data;
+                markersCache.forEach(mostrarMarcador);
+                renderMarkerList();
+            } catch (err) {
+                console.error('Erro ao buscar marcadores:', err);
+            }
+        }
+
+        const OFFLINE_QUEUE_KEY = 'mapa_offline_queue_v1';
+
+        async function saveMarkerToServer(m) {
+            console.log('[client] POST', API + '/markers', m);
+            const res = await fetch(API + '/markers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titulo: m.titulo, info: m.info, imagemSrc: m.imagemSrc, lat: m.lat, lng: m.lng })
+            });
+            if (!res.ok) {
+                const text = await res.text();
+                console.error('[client] POST /markers failed', res.status, res.statusText, text);
+                throw new Error('POST failed');
+            }
+            const json = await res.json();
+            console.log('[client] POST saved', json);
+            return json; // { id, ... }
+        }
+
+        function getOfflineQueue() {
+            try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]'); }
+            catch { return []; }
+        }
+
+        function setOfflineQueue(q) { localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(q)); }
+
+        function queueOfflineMarker(marker) {
+            const q = getOfflineQueue();
+            q.push(marker);
+            setOfflineQueue(q);
+            console.warn('[client] Salvando no cache offline, será sincronizado depois', marker);
+        }
+
+        async function trySyncQueuedMarkers() {
+            const q = getOfflineQueue();
+            if (!q.length) return;
+            console.log('[client] Tentando sincronizar', q.length, 'itens');
+            const remaining = [];
+            for (const m of q) {
+                try {
+                    const saved = await saveMarkerToServer(m);
+                    // atualizar markersCache: substituir qualquer marcador local pela versão salva
+                    const idx = markersCache.findIndex(x => x._localId && x._localId === m._localId);
+                    const doc = { id: saved.id, titulo: saved.titulo, info: saved.info, imagemSrc: saved.imagemSrc, lat: saved.lat, lng: saved.lng };
+                    if (idx !== -1) {
+                        markersCache[idx] = doc;
+                    } else {
+                        markersCache.push(doc);
+                    }
+                    // remover marcador temporário do mapa e redesenhar
+                    if (m._localId) {
+                        const tempId = m._localId;
+                        const el = document.getElementById('marker-' + tempId);
+                        if (el) el.remove();
+                        const lm = leafletMarkers[tempId];
+                        if (lm) { map.removeLayer(lm); delete leafletMarkers[tempId]; }
+                    }
+                    mostrarMarcador(doc);
+                    renderMarkerList();
+                } catch (err) {
+                    console.error('[client] Falha ao sincronizar item', m, err);
+                    remaining.push(m);
+                }
+            }
+            setOfflineQueue(remaining);
+        }
+
+        // tenta sincronizar a cada 20 segundos
+        setInterval(async () => {
+            try {
+                // checa saúde do servidor antes
+                const h = await fetch(API + '/health');
+                if (h.ok) await trySyncQueuedMarkers();
+            } catch (err) {
+                // servidor indisponível, manter fila
+            }
+        }, 20000);
+
+        async function updateMarkerOnServer(id, data) {
+            await fetch(API + '/markers/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+
+        async function deleteMarkerOnServer(id) {
+            await fetch(API + '/markers/' + id, { method: 'DELETE' });
+        }
+
+        // === Map interactions ===
+        function mostrarMarcador(marcador) {
+            // evita duplicar markers se já existir
+            if (leafletMarkers[marcador.id]) return;
+            const novoMarcador = L.marker([marcador.lat, marcador.lng]).addTo(map);
+            const conteudoPopup = criarPopupComImagem(marcador.titulo, marcador.info, marcador.imagemSrc);
+            novoMarcador.bindPopup(conteudoPopup);
+            leafletMarkers[marcador.id] = novoMarcador;
+        }
+
+        function atualizarPopupDoMarcador(marcador) {
+            const markerObj = leafletMarkers[marcador.id];
+            if (markerObj) {
+                const conteudo = criarPopupComImagem(marcador.titulo, marcador.info, marcador.imagemSrc);
+                markerObj.bindPopup(conteudo);
+            }
+        }
+
+        function centralizarMarcador(id) {
+            const m = markersCache.find(x => x.id === id);
+            if (!m) return;
+            map.flyTo([m.lat, m.lng], 17, { duration: 0.8 });
+            const markerObj = leafletMarkers[id];
+            if (markerObj) markerObj.openPopup();
+        }
+
+        map.on('click', function(e) {
+            if (aguardandoClique) {
+                const titulo = document.getElementById('titulo').value;
+                const info = document.getElementById('info').value;
+                const arquivoInput = document.getElementById('imagem');
+                const arquivo = arquivoInput.files && arquivoInput.files[0];
+
+                function enviarComImagem(imagemSrc) {
+                    const marcador = { titulo, info, imagemSrc, lat: e.latlng.lat, lng: e.latlng.lng };
+                    // salvar no servidor, se falhar salva em fila offline
+                    saveMarkerToServer(marcador).then(saved => {
+                        const doc = { id: saved.id, titulo: saved.titulo, info: saved.info, imagemSrc: saved.imagemSrc, lat: saved.lat, lng: saved.lng };
+                        markersCache.push(doc);
+                        mostrarMarcador(doc);
+                        renderMarkerList();
+                    }).catch(err => {
+                        console.warn('[client] POST falhou, salvando localmente para sincronizar depois', err);
+                        // criar id local temporário para referência
+                        const localId = 'local-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+                        const localDoc = { id: localId, _localId: localId, titulo: marcador.titulo, info: marcador.info, imagemSrc: marcador.imagemSrc, lat: marcador.lat, lng: marcador.lng };
+                        markersCache.push(localDoc);
+                        // guardar na fila offline (com _localId para referência)
+                        queueOfflineMarker({ _localId: localId, titulo: marcador.titulo, info: marcador.info, imagemSrc: marcador.imagemSrc, lat: marcador.lat, lng: marcador.lng });
+                        mostrarMarcador(localDoc);
+                        renderMarkerList();
+                    });
+                }
+
+                if (arquivo) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const imagemSrc = event.target.result;
+                        enviarComImagem(imagemSrc);
+                    };
+                    reader.readAsDataURL(arquivo);
+                } else {
+                    enviarComImagem(null);
+                }
+
+                // Reseta o estado local do formulário
+                aguardandoClique = false;
+                document.getElementById('map').style.cursor = '';
+                document.getElementById('titulo').value = '';
+                document.getElementById('info').value = '';
+                arquivoInput.value = '';
+            }
+        });
+
+        function renderMarkerList() {
+            const lista = document.getElementById('lista');
+            lista.innerHTML = '';
+            if (!markersCache.length) {
+                lista.innerHTML = '<div style="color:#666">Nenhum ponto adicionado.</div>';
+                return;
+            }
+            markersCache.slice().reverse().forEach(m => {
+                const item = document.createElement('div');
+                item.className = 'marker-item';
+                item.id = 'marker-' + m.id;
+
+                const thumb = document.createElement('img');
+                thumb.className = 'marker-thumb';
+                thumb.src = m.imagemSrc || 'img/logo.png';
+
+                const meta = document.createElement('div');
+                meta.className = 'marker-meta';
+                meta.innerHTML = `<strong>${m.titulo}</strong><div style="font-size:12px;color:#666">${m.info || ''}</div>`;
+
+                const actions = document.createElement('div');
+                actions.className = 'marker-actions';
+                const btnCentralizar = document.createElement('button');
+                btnCentralizar.textContent = 'Centralizar';
+                btnCentralizar.addEventListener('click', function(ev) { ev.stopPropagation(); centralizarMarcador(m.id); });
+
+                const btnEditar = document.createElement('button');
+                btnEditar.textContent = 'Editar';
+                btnEditar.addEventListener('click', function(ev) { ev.stopPropagation(); editarMarcador(m.id); });
+
+                const btnExcluir = document.createElement('button');
+                btnExcluir.textContent = 'Excluir';
+                btnExcluir.addEventListener('click', function(ev) { ev.stopPropagation(); excluirMarcador(m.id); });
+
+                actions.appendChild(btnCentralizar);
+                actions.appendChild(btnEditar);
+                actions.appendChild(btnExcluir);
+
+                item.appendChild(thumb);
+                item.appendChild(meta);
+                item.appendChild(actions);
+
+                lista.appendChild(item);
+            });
+        }
+
+        async function excluirMarcador(id) {
+            if (!confirm('Excluir este ponto?')) return;
+            try {
+                await deleteMarkerOnServer(id);
+                markersCache = markersCache.filter(m => m.id !== id);
+                const markerObj = leafletMarkers[id];
+                if (markerObj) {
+                    map.removeLayer(markerObj);
+                    delete leafletMarkers[id];
+                }
+                renderMarkerList();
+            } catch (err) { console.error(err); }
+        }
+
+        function editarMarcador(id) {
+            const idx = markersCache.findIndex(m => m.id === id);
+            if (idx === -1) return;
+            const m = markersCache[idx];
+            const item = document.getElementById('marker-' + id);
+            if (!item) return;
+            item.innerHTML = `
+                <div style="flex:1">
+                    <input type="text" id="edit-titulo-${id}" value="${m.titulo}" style="width:100%; padding:6px; margin-bottom:6px">
+                    <input type="text" id="edit-info-${id}" value="${m.info || ''}" style="width:100%; padding:6px; margin-bottom:6px">
+                    <input type="file" id="edit-imagem-${id}" accept="image/*">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <button id="save-${id}">Salvar</button>
+                    <button id="cancel-${id}">Cancelar</button>
+                </div>
+            `;
+
+            document.getElementById('cancel-' + id).onclick = function() { renderMarkerList(); };
+
+            document.getElementById('save-' + id).onclick = async function() {
+                const novoTitulo = document.getElementById('edit-titulo-' + id).value;
+                const novoInfo = document.getElementById('edit-info-' + id).value;
+                const arquivoInput = document.getElementById('edit-imagem-' + id);
+                const arquivo = arquivoInput.files && arquivoInput.files[0];
+
+                function aplicarAtualizacao(imagemSrc) {
+                    markersCache[idx].titulo = novoTitulo;
+                    markersCache[idx].info = novoInfo;
+                    if (imagemSrc !== undefined) markersCache[idx].imagemSrc = imagemSrc;
+                    atualizarPopupDoMarcador(markersCache[idx]);
+                    renderMarkerList();
+                }
+
+                try {
+                    let imagemSrc;
+                    if (arquivo) {
+                        const reader = new FileReader();
+                        reader.onload = async function(ev) {
+                            imagemSrc = ev.target.result;
+                            await updateMarkerOnServer(id, { titulo: novoTitulo, info: novoInfo, imagemSrc });
+                            aplicarAtualizacao(imagemSrc);
+                        };
+                        reader.readAsDataURL(arquivo);
+                    } else {
+                        await updateMarkerOnServer(id, { titulo: novoTitulo, info: novoInfo, imagemSrc: m.imagemSrc });
+                        aplicarAtualizacao();
+                    }
+                } catch (err) { console.error(err); }
+            };
+        }
+
+        // Carrega marcadores do servidor ao iniciar
+        fetchMarkersFromServer();
+    </script>
+</body>
+</html>

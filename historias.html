@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Portal Óbidos - Histórias</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <div class="logo"><img src="img/logo.png" style="width:100%; border-radius:4px">ÓBIDOS PA</div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="mapa.html">Mapa de Óbidos</a></li>
+            <li><a href="historias.html" class="active">Histórias</a></li>
+            <li><a href="cultural.html">Mapa Cultural</a></li>
+            <li><a href="livros.html">Mapa de Livros</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="feed-container">
+                <h1>Histórias de Óbidos</h1>
+                
+                <div id="container-postagens">
+                    <p>A carregar histórias...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const container = document.getElementById("container-postagens");
+            
+            try {
+                // Procura as publicações da categoria 'historias' no servidor Node.js
+                const response = await fetch('/api/postagens/historias');
+                const postagens = await response.json();
+
+                if (postagens.length === 0) {
+                    container.innerHTML = "<p>Nenhuma história cadastrada nesta categoria.</p>";
+                    return;
+                }
+
+                // Limpa o texto de carregamento
+                container.innerHTML = "";
+
+                // Renderiza cada publicação dinâmica vinda da base de dados
+                postagens.forEach(post => {
+                    const postElement = document.createElement("article");
+                    postElement.classList.add("card-post");
+
+                    // Verifica se o documento do Mongo contém um caminho de imagem associado
+                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; border-radius:8px; margin-bottom:15px;">` : '';
+
+                    postElement.innerHTML = `
+                        <h2>${post.titulo}</h2>
+                        <small>Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}</small>
+                        ${imgTag}
+                        <p>${post.conteudo.replace(/\n/g, '<br>')}</p>
+                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+                    `;
+                    container.appendChild(postElement);
+                });
+
+            } catch (error) {
+                console.error("Erro ao renderizar posts:", error);
+                container.innerHTML = "<p>Erro ao carregar as postagens.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
