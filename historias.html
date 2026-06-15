@@ -57,8 +57,8 @@
                     postElement.innerHTML = `
                         <h2>${post.titulo}</h2>
                         <small>Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}</small>
-                        ${imgTag}
                         <p>${post.conteudo.replace(/\n/g, '<br>')}</p>
+                        ${imgTag}
                         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
                         
                     `;
