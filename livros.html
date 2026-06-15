@@ -18,47 +18,64 @@
     </nav>
 
     <main>
-        <section class="hero">
-            <div class="feed-container">
-                <h1>Mapa Livros</h1>
-                
-                <div id="container-postagens">
-                    <p>A carregar postagens...</p>
-                </div>
-            </div>
+        <h1>Mapa de Livros de Óbidos</h1>
+        
+        <section class="hero" id="container-postagens">
+            <p style="color: #666;">Carregando publicações de livros...</p>
         </section>
     </main>
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             const container = document.getElementById("container-postagens");
+            
             try {
-                // Alinhado para buscar a categoria 'livros'
+                // Rota relativa apontando para a categoria 'livros' no Render
                 const response = await fetch('/api/postagens/livros');
-                const postagens = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status}`);
+                }
 
-                if (postagens.length === 0) {
+                const postagens = await response.json();
+                console.log("Postagens de livros recebidas:", postagens);
+
+                if (!postagens || postagens.length === 0) {
                     container.innerHTML = "<p>Nenhum livro ou mapa cadastrado nesta categoria.</p>";
                     return;
                 }
+
                 container.innerHTML = "";
+
                 postagens.forEach(post => {
                     const postElement = document.createElement("article");
                     postElement.classList.add("card-post");
-                    let imgTag = post.imagem ? `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; border-radius:8px; margin-bottom:15px; display:block;">` : '';
+
+                    let imgTag = '';
+                    if (post.imagem) {
+                        const caminhoImagem = post.imagem.startsWith('/') ? post.imagem : `/${post.imagem}`;
+                        imgTag = `<img src="${caminhoImagem}" alt="${post.titulo}" style="max-width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">`;
+                    }
+
+                    const tituloText = post.titulo || "Sem título";
+                    const dataText = post.data_criacao ? new Date(post.data_criacao).toLocaleDateString('pt-BR') : 'Data desconhecida';
+                    const conteudoText = post.conteudo ? post.conteudo.replace(/\n/g, '<br>') : '';
 
                     postElement.innerHTML = `
-                        <h2>${post.titulo}</h2>
-                        <small style="color: #666; display:block; margin-bottom:10px;">Publicado em: ${new Date(post.data_criacao).toLocaleDateString('pt-BR')}</small>
+                        <h2>${tituloText}</h2>
+                        <small style="color: #666; display:block; margin-bottom:10px;">
+                            Publicado em: ${dataText}
+                        </small>
                         ${imgTag}
-                        <p style="line-height: 1.6;">${post.conteudo.replace(/\n/g, '<br>')}</p>
+                        <p style="line-height: 1.6;">${conteudoText}</p>
                         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
                     `;
                     container.appendChild(postElement);
                 });
+
             } catch (error) {
-                console.error("Erro ao renderizar posts:", error);
-                container.innerHTML = "<p style='color: red;'>Erro ao carregar o mapa de livros.</p>";
+                console.error("Erro ao renderizar posts de livros:", error);
+                container.innerHTML = "<p style='color: red;'>Erro ao carregar as postagens de livros. Verifique o console (F12) para detalhes.</p>";
             }
         });
     </script>
