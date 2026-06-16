@@ -25,29 +25,30 @@
             <div class="painel">
                 <h2>NOVA POSTAGEM</h2>
 
-                <form id="postForm" enctype="multipart/form-data">
-                    
-                    <label for="titulo">Título da postagem</label>
-                    <input type="text" id="titulo" name="titulo" required minlength="3" maxlength="120">
+    <form id="postForm">
+    
+    <label for="titulo">Título da postagem</label>
+    <input type="text" id="titulo" name="titulo" required minlength="3" maxlength="120">
 
-                    <label for="conteudo">Conteúdo</label>
-                    <textarea id="conteudo" name="conteudo" rows="8" required minlength="10"></textarea>
+    <label for="conteudo">Conteúdo</label>
+    <textarea id="conteudo" name="conteudo" rows="8" required minlength="10"></textarea>
 
-                    <label for="imagem">Imagem da postagem (opcional)</label>
-                    <input type="file" id="imagem" name="imagem" accept="image/*">
+    <!-- ALTERADO: Trocado de 'file' para 'url' -->
+    <label for="imagem">Link da Imagem da postagem (opcional)</label>
+    <input type="url" id="imagem" name="imagem" placeholder="https://exemplo.com/imagem.png">
 
-                    <label for="categoria">Categoria</label>
-                    <select id="categoria" name="categoria" required>
-                        <option value="">Selecione...</option>
-                        <option value="historias">Histórias</option>
-                        <option value="cultural">Mapa Cultural</option>
-                        <option value="livros">Mapa de Livros</option>
-                    </select>
+    <label for="categoria">Categoria</label>
+    <select id="categoria" name="categoria" required>
+        <option value="">Selecione...</option>
+        <option value="historias">Histórias</option>
+        <option value="cultural">Mapa Cultural</option>
+        <option value="livros">Mapa de Livros</option>
+    </select>
 
-                    <button type="submit" style="margin-top:20px;">Publicar</button>
+    <button type="submit" style="margin-top:20px;">Publicar</button>
 
-                    <p id="erro" class="error" style="color: red; margin-top: 10px; font-weight: bold;"></p>
-                </form>
+    <p id="erro" class="error" style="color: red; margin-top: 10px; font-weight: bold;"></p>
+</form>
             </div>
 
         </section>
