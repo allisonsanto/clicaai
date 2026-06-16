@@ -144,30 +144,29 @@ async function start() {
     res.json({ ok: true });
   });
 
-  // =======================================================
-  // ROTAS DO PAINEL DE POSTAGENS
-  // =======================================================
-  app.post('/receber-post', upload.single('imagem'), async (req, res) => {
-      try {
-          const { titulo, conteudo, categoria } = req.body;
-          const imagemPath = req.file ? `/uploads/${req.file.filename}` : null;
+// =======================================================
+// ROTAS DO PAINEL DE POSTAGENS (MODIFICADA)
+// =======================================================
+app.post('/receber-post', async (req, res) => {
+    try {
+        // Agora a 'imagem' vem diretamente do req.body enviada como string/texto pelo painel
+        const { titulo, conteudo, categoria, imagem } = req.body;
 
-          const novaPostagem = new Postagem({
-              titulo,
-              conteudo,
-              categoria,
-              imagem: imagemPath
-          });
+        const novaPostagem = new Postagem({
+            titulo,
+            conteudo,
+            categoria,
+            imagem: imagem // Salva a URL externa diretamente no banco
+        });
 
-          await novaPostagem.save();
-          
-          // Ajustado para responder sucesso de forma limpa para o front-end JavaScript tratar
-          res.status(200).json({ success: true });
-      } catch (error) {
-          console.error("Erro ao salvar no Mongo:", error);
-          res.status(500).send("Erro interno ao salvar a postagem.");
-      }
-  });
+        await novaPostagem.save();
+        
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("Erro ao salvar no Mongo:", error);
+        res.status(500).send("Erro interno ao salvar a postagem.");
+    }
+});
 
   app.get('/api/postagens/:categoria', async (req, res) => {
       try {
