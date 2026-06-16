@@ -47,35 +47,32 @@
 
                 container.innerHTML = "";
 
-                postagens.forEach(post => {
-                    const postElement = document.createElement("article");
-                    postElement.classList.add("card-post");
+     postagens.forEach(post => {
+    const postElement = document.createElement("article");
+    postElement.classList.add("card-post");
 
-                    // Verificação blindada para a imagem não travar o loop de posts
-                    let imgTag = '';
-                    if (post.imagem) {
-                        // Garante que o caminho da imagem use a barra correta
-                        const caminhoImagem = post.imagem.startsWith('/') ? post.imagem : `/${post.imagem}`;
-                        imgTag = `<img src="${caminhoImagem}" alt="${post.titulo}" style="max-width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">`;
-                    }
+    // Verificação adaptada para links externos
+    let imgTag = '';
+    if (post.imagem) {
+        // ALTERADO: O src recebe diretamente o link completo que veio do banco de dados externo
+        imgTag = `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">`;
+    }
 
-                    // Previne que erros de campos nulos quebrem a página
-                    const tituloText = post.titulo || "Sem título";
-                    const dataText = post.data_criacao ? new Date(post.data_criacao).toLocaleDateString('pt-BR') : 'Data desconhecida';
-                    const conteudoText = post.conteudo ? post.conteudo.replace(/\n/g, '<br>') : '';
+    const tituloText = post.titulo || "Sem título";
+    const dataText = post.data_criacao ? new Date(post.data_criacao).toLocaleDateString('pt-BR') : 'Data desconhecida';
+    const conteudoText = post.conteudo ? post.conteudo.replace(/\n/g, '<br>') : '';
 
-                    postElement.innerHTML = `
-                        <h2>${tituloText}</h2>
-                        <small style="color: #666; display:block; margin-bottom:10px;">
-                            Publicado em: ${dataText}
-                        </small>
-                        ${imgTag}
-                        <p style="line-height: 1.6;">${conteudoText}</p>
-                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
-                    `;
-                    container.appendChild(postElement);
-                });
-
+    postElement.innerHTML = `
+        <h2>${tituloText}</h2>
+        <small style="color: #666; display:block; margin-bottom:10px;">
+            Publicado em: ${dataText}
+        </small>
+        ${imgTag}
+        <p style="line-height: 1.6;">${conteudoText}</p>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+    `;
+    container.appendChild(postElement);
+});
             } catch (error) {
                 console.error("Erro ao renderizar posts:", error);
                 container.innerHTML = "<p style='color: red;'>Erro ao carregar as postagens. Verifique o console (F12) para mais detalhes.</p>";
