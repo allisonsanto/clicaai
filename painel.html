@@ -55,56 +55,61 @@
     </main>
 
     <script>
-        document.getElementById("postForm").addEventListener("submit", async function(e) {
-            e.preventDefault(); // Impede o redirecionamento bruto da página
+document.getElementById("postForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); 
 
-            const titulo = document.getElementById("titulo").value.trim();
-            const conteudo = document.getElementById("conteudo").value.trim();
-            const categoria = document.getElementById("categoria").value;
-            const erro = document.getElementById("erro");
+    const titulo = document.getElementById("titulo").value.trim();
+    const conteudo = document.getElementById("conteudo").value.trim();
+    const imagem = document.getElementById("imagem").value.trim(); // Captura o link de texto
+    const categoria = document.getElementById("categoria").value;
+    const erro = document.getElementById("erro");
 
-            erro.style.color = "red";
-            erro.textContent = "";
+    erro.style.color = "red";
+    erro.textContent = "";
 
-            if (titulo.length < 3) {
-                erro.textContent = "O título precisa ter pelo menos 3 caracteres.";
-                return;
-            }
+    if (titulo.length < 3) {
+        erro.textContent = "O título precisa ter pelo menos 3 caracteres.";
+        return;
+    }
 
-            if (conteudo.length < 10) {
-                erro.textContent = "O conteúdo precisa ter pelo menos 10 caracteres.";
-                return;
-            }
+    if (conteudo.length < 10) {
+        erro.textContent = "O conteúdo precisa ter pelo menos 10 caracteres.";
+        return;
+    }
 
-            // Captura todos os campos do formulário incluindo o arquivo de imagem automaticamente
-            const formData = new FormData(this);
+    try {
+        erro.style.color = "blue";
+        erro.textContent = "Publicando no banco de dados... Aguarde.";
 
-            try {
-                erro.style.color = "blue";
-                erro.textContent = "Publicando no banco de dados... Aguarde.";
-
-                // Rota relativa: envia para o próprio servidor do Render onde o site está rodando
-                const response = await fetch('/receber-post', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    erro.style.color = "green";
-                    erro.textContent = "Postagem publicada com sucesso! Redirecionando...";
-                    
-                    // Redireciona dinamicamente para a página correspondente à categoria escolhida
-                    setTimeout(() => {
-                        window.location.href = `/${categoria}.html`;
-                    }, 1500);
-                } else {
-                    erro.textContent = "Erro ao salvar a postagem no servidor.";
-                }
-            } catch (error) {
-                console.error("Erro na requisição:", error);
-                erro.textContent = "Erro de conexão com o servidor.";
-            }
+        // ALTERADO: Enviando como JSON e não mais como FormData
+        const response = await fetch('/receber-post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                titulo,
+                conteudo,
+                categoria,
+                imagem: imagem || null // Se estiver vazio, envia nulo
+            })
         });
+
+        if (response.ok) {
+            erro.style.color = "green";
+            erro.textContent = "Postagem publicada com sucesso! Redirecionando...";
+            
+            setTimeout(() => {
+                window.location.href = `/${categoria}.html`;
+            }, 1500);
+        } else {
+            erro.textContent = "Erro ao salvar a postagem no servidor.";
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        erro.textContent = "Erro de conexão com o servidor.";
+    }
+});
     </script>
 </body>
 </html>
