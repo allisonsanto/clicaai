@@ -30,7 +30,7 @@
             const container = document.getElementById("container-postagens");
             
             try {
-                // Rota relativa apontando para a categoria 'cultural' no Render
+                // Rota relativa apontando para o servidor do Render
                 const response = await fetch('/api/postagens/cultural');
                 
                 if (!response.ok) {
@@ -38,44 +38,44 @@
                 }
 
                 const postagens = await response.json();
-                console.log("Postagens culturais recebidas:", postagens);
+                console.log("Postagens recebidas:", postagens); // Mostra no console o que veio do banco
 
                 if (!postagens || postagens.length === 0) {
-                    container.innerHTML = "<p>Nenhuma publicação cadastrada nesta categoria cultural.</p>";
+                    container.innerHTML = "<p>Nenhuma história cadastrada nesta categoria.</p>";
                     return;
                 }
 
                 container.innerHTML = "";
 
-                postagens.forEach(post => {
-                    const postElement = document.createElement("article");
-                    postElement.classList.add("card-post");
+     postagens.forEach(post => {
+    const postElement = document.createElement("article");
+    postElement.classList.add("card-post");
 
-                    let imgTag = '';
-                    if (post.imagem) {
-                        const caminhoImagem = post.imagem.startsWith('/') ? post.imagem : `/${post.imagem}`;
-                        imgTag = `<img src="${caminhoImagem}" alt="${post.titulo}" style="max-width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">`;
-                    }
+    // Verificação adaptada para links externos
+    let imgTag = '';
+    if (post.imagem) {
+        // ALTERADO: O src recebe diretamente o link completo que veio do banco de dados externo
+        imgTag = `<img src="${post.imagem}" alt="${post.titulo}" style="max-width:100%; max-height:400px; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">`;
+    }
 
-                    const tituloText = post.titulo || "Sem título";
-                    const dataText = post.data_criacao ? new Date(post.data_criacao).toLocaleDateString('pt-BR') : 'Data desconhecida';
-                    const conteudoText = post.conteudo ? post.conteudo.replace(/\n/g, '<br>') : '';
+    const tituloText = post.titulo || "Sem título";
+    const dataText = post.data_criacao ? new Date(post.data_criacao).toLocaleDateString('pt-BR') : 'Data desconhecida';
+    const conteudoText = post.conteudo ? post.conteudo.replace(/\n/g, '<br>') : '';
 
-                    postElement.innerHTML = `
-                        <h2>${tituloText}</h2>
-                        <small style="color: #666; display:block; margin-bottom:10px;">
-                            Publicado em: ${dataText}
-                        </small>
-                        ${imgTag}
-                        <p style="line-height: 1.6;">${conteudoText}</p>
-                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
-                    `;
-                    container.appendChild(postElement);
-                });
-
+    postElement.innerHTML = `
+        <h2>${tituloText}</h2>
+        <small style="color: #666; display:block; margin-bottom:10px;">
+            Publicado em: ${dataText}
+        </small>
+        <p style="line-height: 1.6;">${conteudoText}</p>
+        ${imgTag}
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+    `;
+    container.appendChild(postElement);
+});
             } catch (error) {
-                console.error("Erro ao renderizar posts culturais:", error);
-                container.innerHTML = "<p style='color: red;'>Erro ao carregar as postagens culturais. Verifique o console (F12) para detalhes.</p>";
+                console.error("Erro ao renderizar posts:", error);
+                container.innerHTML = "<p style='color: red;'>Erro ao carregar as postagens. Verifique o console (F12) para mais detalhes.</p>";
             }
         });
     </script>
