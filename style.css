@@ -47,7 +47,7 @@ h1 { color: #2c3e50; margin-bottom: 20px; }px; margin-top: 20px; z-index: 1; }
         .error { color: red; margin-top: 5px; }     }
 
 .conteudo-site {
-    flex: 1; /* Faz o conteúdo ocupar todo o espaço disponível, empurrando o rodapé para baixo */
+    flex: 0; /* Faz o conteúdo ocupar todo o espaço disponível, empurrando o rodapé para baixo */
     padding: 20px;
     background-color: #f4f4f4;     }
 
