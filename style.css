@@ -96,13 +96,13 @@ h1 { color: #2c3e50; margin-bottom: 20px; }px; margin-top: 20px; z-index: 1; }
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 15px;
             justify-content: space-between;
         }
 
         .mini-item {
             width: 100%;
-            height: 110px;
+            height: 200px;
             object-fit: cover;
             border-radius: 6px;
             cursor: pointer;
