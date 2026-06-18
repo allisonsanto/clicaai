@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Óbidos - Início</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -20,25 +21,81 @@
     <main>
         <img src="img/banner.jpg" style="width:100%; border-radius:4px">
         <section class="hero">
-            <h1>Bem-vindo ao Portal de Óbidos</h1>
-            <p>Explore a história, a cultura e a geografia da "Sentinela do Amazonas".</p>
-            
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            
-            <h3>Últimas Publicações</h3>
-            <div style="margin-top: 20px;">
-                <article style="margin-bottom: 15px;">
-                    <strong><img src="img/CASAMARCELA.png" style="width:30%; border-radius:4px">• Atualização do Mapeamento Histórico:</strong> Adicionamos 5 novos pontos no Forte do Desterro.
-</                </article><br></br>
-                <article style="margin-bottom: 15px;">
-                    <strong>• Novo Artigo:</strong> As tradições do Carnap```
+    <div class="galeria-container">
+        <!-- Destaque Principal -->
+        <div class="item-principal">
+            <img id="foto-grande" src="" alt="Destaque">
+            <div id="texto-descricao" class="descricao"></div>
+        </div>
 
----
+        <!-- Miniaturas ao lado -->
+        <div class="lista-miniaturas">
+            <img class="mini-item" id="mini-0" onclick="mudarDestaque(0)" src="" alt="Miniatura 1">
+            <img class="mini-item" id="mini-1" onclick="mudarDestaque(1)" src="" alt="Miniatura 2">
+            <img class="mini-item" id="mini-2" onclick="mudarDestaque(2)" src="" alt="Miniatura 3">
+        </div>
+    </div>
 
-### 3. Página do Mapa (mapa.html)
-Aqui inteauxis agora disponíveis na seção cultural.
-                </article>
-            </div>
+    <script>
+        // Dados das atualizações (Substitua as URLs das imagens e os textos)
+        const atualizacoes = [
+            {
+                img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10",
+                texto: "Esta é a primeira grande atualização da nossa página principal com detalhes importantes."
+            },
+            {
+                img: "https://www.agenciapara.com.br/midias/2018/pequenas/a8ce8212-23c7-46af-bde9-1deb50188103.jpg",
+                texto: "Confira o segundo destaque da semana repleto de novidades e fotos exclusivas do evento."
+            },
+            {
+                img: "https://www.obidos.net.br/images/stories/carnaval/2022/01-carnapauxis/06-1-morro.jpg",
+                texto: "Lançamento do novo recurso da plataforma que promete otimizar o tempo de carregamento."
+            },
+            {
+                img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAl_50PuVawl0DIwdwSKiKkjj6mSo-ox8QnaOz7AuNEi0bZ9RYLM495WY_&s=10",
+                texto: "Dicas essenciais de design responsivo para melhorar a experiência do usuário mobile."
+            }
+        ];
+
+        // Renderiza as fotos e textos nas posições corretas
+        function atualizarGaleria() {
+            // Define o item 0 como o grande
+            document.getElementById('foto-grande').src = atualizacoes[0].img;
+            document.getElementById('texto-descricao').innerText = atualizacoes[0].texto;
+
+            // Define os itens 1, 2 e 3 como as miniaturas ao lado
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`mini-${i}`).src = atualizacoes[i + 1].img;
+            }
+        }
+
+        // Faz a rotação empurrando o primeiro item para o final da fila
+        function rotacionarItens() {
+            const primeiroItem = atualizacoes.shift(); // Remove o primeiro (grande)
+            atualizacoes.push(primeiroItem);           // Coloca no final da fila (vira a última miniatura)
+            atualizarGaleria();
+        }
+
+        // Permite clicar na miniatura para ver o destaque imediatamente
+        function mudarDestaque(indexMiniatura) {
+            clearInterval(intervalo); // Pausa o tempo atual
+            
+            // Move os itens necessários para o topo com base no clique
+            for (let i = 0; i <= indexMiniatura; i++) {
+                const item = atualizacoes.shift();
+                atualizacoes.push(item);
+            }
+            
+            atualizarGaleria();
+            intervalo = setInterval(rotacionarItens, 10000); // Reinicia o cronômetro
+        }
+
+        // Inicializa a exibição
+        atualizarGaleria();
+
+        // Configura a troca automática para cada 10 segundos (10000 milissegundos)
+        let intervalo = setInterval(rotacionarItens, 10000);
+    </script>
         </section>
 
         
