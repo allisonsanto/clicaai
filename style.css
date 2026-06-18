@@ -96,7 +96,7 @@ h1 { color: #2c3e50; margin-bottom: 20px; }px; margin-top: 20px; z-index: 1; }
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 5px;
             justify-content: space-between;
         }
 
