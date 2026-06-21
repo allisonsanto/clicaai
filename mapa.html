@@ -326,13 +326,13 @@
                 btnCentralizar.textContent = 'Centralizar';
                 btnCentralizar.addEventListener('click', function(ev) { ev.stopPropagation(); centralizarMarcador(m.id); });
 
-                // const btnEditar = document.createElement('button');
-                // btnEditar.textContent = 'Editar';
-                // btnEditar.addEventListener('click', function(ev) { ev.stopPropagation(); editarMarcador(m.id); });
+                const btnEditar = document.createElement('button');
+                btnEditar.textContent = 'Editar';
+                btnEditar.addEventListener('click', function(ev) { ev.stopPropagation(); editarMarcador(m.id); });
 
-                // const btnExcluir = document.createElement('button');
-                // btnExcluir.textContent = 'Excluir';
-                // btnExcluir.addEventListener('click', function(ev) { ev.stopPropagation(); excluirMarcador(m.id); });
+                const btnExcluir = document.createElement('button');
+                btnExcluir.textContent = 'Excluir';
+                btnExcluir.addEventListener('click', function(ev) { ev.stopPropagation(); excluirMarcador(m.id); });
 
                 actions.appendChild(btnCentralizar);
                 actions.appendChild(btnEditar);
