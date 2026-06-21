@@ -53,14 +53,14 @@
         <img src="img/banner.jpg" style="width:100%; border-radius:4px">
         <h1>Mapa de Satélite - Óbidos</h1>
         
-        <div class="admin-panel">
+        <!-- <div class="admin-panel">
             <strong>Painel do Administrador:</strong><br><br>
             <input type="file" id="imagem" name="imagem" accept="image/*">
             <input type="text" id="titulo" placeholder="Nome do Local (ex: Forte Pauxis)">
             <input type="text" id="info" placeholder="Descrição ou História">
             <button onclick="ativarModoAdicionar()">Adicionar Ponto no Mapa</button>
             <p><small>* Clique no botão acima e depois clique em qualquer lugar do mapa para marcar.</small></p>
-        </div>
+        </div> -->
 
         <div id="map-container">
             <div id="map"></div>
@@ -326,13 +326,13 @@
                 btnCentralizar.textContent = 'Centralizar';
                 btnCentralizar.addEventListener('click', function(ev) { ev.stopPropagation(); centralizarMarcador(m.id); });
 
-                const btnEditar = document.createElement('button');
-                btnEditar.textContent = 'Editar';
-                btnEditar.addEventListener('click', function(ev) { ev.stopPropagation(); editarMarcador(m.id); });
+                // const btnEditar = document.createElement('button');
+                // btnEditar.textContent = 'Editar';
+                // btnEditar.addEventListener('click', function(ev) { ev.stopPropagation(); editarMarcador(m.id); });
 
-                const btnExcluir = document.createElement('button');
-                btnExcluir.textContent = 'Excluir';
-                btnExcluir.addEventListener('click', function(ev) { ev.stopPropagation(); excluirMarcador(m.id); });
+                // const btnExcluir = document.createElement('button');
+                // btnExcluir.textContent = 'Excluir';
+                // btnExcluir.addEventListener('click', function(ev) { ev.stopPropagation(); excluirMarcador(m.id); });
 
                 actions.appendChild(btnCentralizar);
                 actions.appendChild(btnEditar);
