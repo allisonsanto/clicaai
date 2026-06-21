@@ -148,3 +148,24 @@ h1 { color: #2c3e50; margin-bottom: 20px; }px; margin-top: 20px; z-index: 1; }
     font-size: 16px;
     line-height: 1.4;
   }
+
+  /* Container principal com duas colunas */
+  .duas-colunas {
+    display: flex;               /* Cria colunas lado a lado */
+    gap: 0;                      /* Evita espaço automático entre colunas */
+    border: 1px solid #ccc;      /* Borda ao redor do container (opcional) */
+    overflow: hidden;            /* Evita falhas visuais */
+    max-width: 600px;
+    margin: 20px auto;
+  }
+
+  /* Cada coluna */
+  .coluna {
+    flex: 1;                     /* Divide o espaço igualmente */
+    padding: 20px;
+  }
+
+  /* Linha vertical entre as colunas */
+  .coluna-esquerda {
+    border-right: 2px solid #000;  /* Linha divisória */
+  }
