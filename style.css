@@ -130,7 +130,7 @@ h1 { color: #2c3e50; margin-bottom: 20px; }px; margin-top: 20px; z-index: 1; }
         }
 
    .img-text {
-    display: grid;            /* Coloca imagem e texto lado a lado */
+    display: flex;            /* Coloca imagem e texto lado a lado */
     align-items: center;      /* Alinha verticalmente */
     gap: 12px;                /* Espaço entre imagem e texto */
     max-width: 2000px;
