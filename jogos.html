@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Óbidos - Mini Jogos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="img/logo.png" alt="Logo Óbidos PA">
+            <span>ÓBIDOS PA</span>
+        </div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="mapa.html">Mapa de Óbidos</a></li>
+            <li><a href="historias.html">Histórias</a></li>
+            <li><a href="cultural.html">Mapa Cultural</a></li>
+            <li><a href="livros.html">Mapa de Livros</a></li>
+            <li><a href="jogos.html" class="ativo">Mini Jogos</a></li>
+        </ul>
+    </nav>
+
+    <div class="wrapper">
+        <main>
+            <section class="card-secao">
+                <div class="cabecalho-jogo">
+                    <h2 class="titulo-secao" style="margin-bottom: 0;">Palavras Cruzadas: Conheça Óbidos</h2>
+                    <button onclick="reiniciarJogo()" class="btn-secundario">Reiniciar Jogo</button>
+                </div>
+                <p class="subtitulo-jogo">Preencha os quadrados abaixo usando as dicas. Quando uma palavra estiver completa e correta, ela ficará destacada em verde!</p>
+
+                <div class="area-cruzadinha">
+                    <!-- Grade gerada via JavaScript -->
+                    <div id="grade-cruzadinha" class="grade"></div>
+
+                    <!-- Lista de Dicas -->
+                    <div class="painel-dicas">
+                        <div class="grupo-dicas">
+                            <h3>Horizontais</h3>
+                            <ul id="dicas-h"></ul>
+                        </div>
+                        <div class="grupo-dicas">
+                            <h3>Verticais</h3>
+                            <ul id="dicas-v"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="rodape">
+            <p>&copy; 2026 - Todos os direitos reservados a @Allison Santos e @Marcela Queiroz.</p>
+        </footer>
+    </div>
+
+    <!-- Pop-up de Vitória -->
+    <div id="modal-vitoria" class="modal-overlay">
+        <div class="modal-box">
+            <div class="icone-trofeu">🏆</div>
+            <h2>Parabéns!</h2>
+            <p>Você completou todas as 10 palavras e mostrou que conhece muito bem a história e a cultura de <strong>Óbidos - PA</strong>!</p>
+            <button onclick="fecharModal()" class="btn-primario">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script>
+        // Definição das 10 palavras e suas coordenadas (linha, coluna) em grade 12x12
+        const palavras = [
+            { num: 1, palavra: "CARNAPAUXIS", dir: "H", r: 1, c: 0, dica: "O maior e mais tradicional carnaval de rua do oeste do Pará." },
+            { num: 2, palavra: "FOBODROMO",   dir: "V", r: 0, c: 2, dica: "Local oficial de concentração dos blocos no carnaval obidense." },
+            { num: 3, palavra: "PAUXIS",      dir: "V", r: 1, c: 5, dica: "Povo indígena que deu nome à antiga fortaleza e aos nativos da cidade." },
+            { num: 4, palavra: "AMAZONAS",    dir: "H", r: 3, c: 1, dica: "O grande rio que banha a frente da cidade de Óbidos." },
+            { num: 5, palavra: "GARGANTA",    dir: "V", r: 2, c: 7, dica: "Trecho mais estreito e profundo do rio Amazonas, situado em Óbidos." },
+            { num: 6, palavra: "SANTANA",     dir: "H", r: 5, c: 2, dica: "Padroeira de Óbidos, celebrada com grande festividade em julho." },
+            { num: 7, palavra: "SERRA",       dir: "V", r: 5, c: 2, dica: "Formação da Escama, um dos mirantes mais famosos do município." },
+            { num: 8, palavra: "CACAU",       dir: "H", r: 7, c: 0, dica: "Fruto histórico da região e tema de famoso romance de Inglês de Sousa." },
+            { num: 9, palavra: "FORTE",       dir: "H", r: 9, c: 1, dica: "Construção histórica que deu origem ao município em 1697." },
+            { num: 10, palavra: "MUSEU",      dir: "V", r: 6, c: 4, dica: "Espaço integrado que preserva a memória histórica e cultural obidense." }
+        ];
+
+        const LINHAS = 11;
+        const COLUNAS = 11;
+        const gradeEl = document.getElementById('grade-cruzadinha');
+        const inputsMatriz = Array.from({ length: LINHAS }, () => Array(COLUNAS).fill(null));
+        const numerosCelula = {};
+        let direcaoAtual = "H";
+
+        // Mapeia células ativas e numeração inicial
+        const celulasAtivas = {};
+        palavras.forEach(p => {
+            const chaveNum = `${p.r}-${p.c}`;
+            if (!numerosCelula[chaveNum]) numerosCelula[chaveNum] = [];
+            numerosCelula[chaveNum].push(p.num);
+
+            for (let i = 0; i < p.palavra.length; i++) {
+                const r = p.dir === "H" ? p.r : p.r + i;
+                const c = p.dir === "H" ? p.c + i : p.c;
+                celulasAtivas[`${r}-${c}`] = p.palavra[i];
+            }
+        });
+
+        // Monta a grade visual
+        function criarGrade() {
+            gradeEl.innerHTML = '';
+            for (let r = 0; r < LINHAS; r++) {
+                for (let c = 0; c < COLUNAS; c++) {
+                    const chave = `${r}-${c}`;
+                    const celula = document.createElement('div');
+                    celula.className = 'celula';
+
+                    if (celulasAtivas[chave]) {
+                        celula.classList.add('ativa');
+
+                        if (numerosCelula[chave]) {
+                            const spanNum = document.createElement('span');
+                            spanNum.className = 'num-dica';
+                            spanNum.textContent = numerosCelula[chave].join('/');
+                            celula.appendChild(spanNum);
+                        }
+
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.maxLength = 1;
+                        input.dataset.r = r;
+                        input.dataset.c = c;
+                        input.autocomplete = 'off';
+
+                        input.addEventListener('focus', () => detectarDirecao(r, c));
+                        input.addEventListener('input', (e) => aoDigitar(e, r, c));
+                        input.addEventListener('keydown', (e) => aoPressionarTecla(e, r, c));
+
+                        celula.appendChild(input);
+                        inputsMatriz[r][c] = input;
+                    } else {
+                        celula.classList.add('bloqueada');
+                    }
+                    gradeEl.appendChild(celula);
+                }
+            }
+        }
+
+        // Renderiza as listas de dicas
+        function renderizarDicas() {
+            const listaH = document.getElementById('dicas-h');
+            const listaV = document.getElementById('dicas-v');
+            listaH.innerHTML = '';
+            listaV.innerHTML = '';
+
+            palavras.forEach(p => {
+                const li = document.createElement('li');
+                li.id = `dica-${p.num}`;
+                li.innerHTML = `<strong>${p.num}.</strong> ${p.dica}`;
+                li.onclick = () => {
+                    direcaoAtual = p.dir;
+                    inputsMatriz[p.r][p.c].focus();
+                };
+                if (p.dir === 'H') listaH.appendChild(li);
+                else listaV.appendChild(li);
+            });
+        }
+
+        // Ajusta direção automática ao clicar em uma célula
+        function detectarDirecao(r, c) {
+            const temH = (c + 1 < COLUNAS && inputsMatriz[r][c + 1]) || (c - 1 >= 0 && inputsMatriz[r][c - 1]);
+            const temV = (r + 1 < LINHAS && inputsMatriz[r + 1][c]) || (r - 1 >= 0 && inputsMatriz[r - 1][c]);
+            if (temH && !temV) direcaoAtual = "H";
+            if (temV && !temH) direcaoAtual = "V";
+        }
+
+        // Normaliza acentos (ex: Á -> A)
+        function normalizarLetra(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z]/g, '');
+        }
+
+        function aoDigitar(e, r, c) {
+            const letra = normalizarLetra(e.target.value);
+            e.target.value = letra;
+
+            if (letra) {
+                avancarCursor(r, c);
+            }
+            verificarPalavras();
+        }
+
+        function aoPressionarTecla(e, r, c) {
+            if (e.key === 'Backspace' && !e.target.value) {
+                recuarCursor(r, c);
+            } else if (e.key === 'ArrowRight') {
+                direcaoAtual = "H";
+                if (c + 1 < COLUNAS && inputsMatriz[r][c + 1]) inputsMatriz[r][c + 1].focus();
+            } else if (e.key === 'ArrowLeft') {
+                direcaoAtual = "H";
+                if (c - 1 >= 0 && inputsMatriz[r][c - 1]) inputsMatriz[r][c - 1].focus();
+            } else if (e.key === 'ArrowDown') {
+                direcaoAtual = "V";
+                if (r + 1 < LINHAS && inputsMatriz[r + 1][c]) inputsMatriz[r + 1][c].focus();
+            } else if (e.key === 'ArrowUp') {
+                direcaoAtual = "V";
+                if (r - 1 >= 0 && inputsMatriz[r - 1][c]) inputsMatriz[r - 1][c].focus();
+            }
+        }
+
+        function avancarCursor(r, c) {
+            const proxR = direcaoAtual === "V" ? r + 1 : r;
+            const proxC = direcaoAtual === "H" ? c + 1 : c;
+            if (proxR < LINHAS && proxC < COLUNAS && inputsMatriz[proxR][proxC]) {
+                inputsMatriz[proxR][proxC].focus();
+            }
+        }
+
+        function recuarCursor(r, c) {
+            const antR = direcaoAtual === "V" ? r - 1 : r;
+            const antC = direcaoAtual === "H" ? c - 1 : c;
+            if (antR >= 0 && antC >= 0 && inputsMatriz[antR][antC]) {
+                inputsMatriz[antR][antC].focus();
+            }
+        }
+
+        // Verifica palavras corretas, aplica destaque e checa vitória
+        function verificarPalavras() {
+            // Limpa destaques anteriores antes de reavaliar
+            document.querySelectorAll('.celula.correta').forEach(el => el.classList.remove('correta'));
+            document.querySelectorAll('.painel-dicas li.riscada').forEach(el => el.classList.remove('riscada'));
+
+            let totalCorretas = 0;
+
+            palavras.forEach(p => {
+                let formada = "";
+                const celulasDaPalavra = [];
+
+                for (let i = 0; i < p.palavra.length; i++) {
+                    const r = p.dir === "H" ? p.r : p.r + i;
+                    const c = p.dir === "H" ? p.c + i : p.c;
+                    const input = inputsMatriz[r][c];
+                    formada += input.value;
+                    celulasDaPalavra.push(input.parentElement);
+                }
+
+                if (formada === p.palavra) {
+                    totalCorretas++;
+                    celulasDaPalavra.forEach(cel => cel.classList.add('correta'));
+                    document.getElementById(`dica-${p.num}`).classList.add('riscada');
+                }
+            });
+
+            if (totalCorretas === palavras.length) {
+                setTimeout(() => {
+                    document.getElementById('modal-vitoria').classList.add('visivel');
+                }, 300);
+            }
+        }
+
+        function reiniciarJogo() {
+            for (let r = 0; r < LINHAS; r++) {
+                for (let c = 0; c < COLUNAS; c++) {
+                    if (inputsMatriz[r][c]) inputsMatriz[r][c].value = '';
+                }
+            }
+            verificarPalavras();
+            inputsMatriz[1][0].focus();
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-vitoria').classList.remove('visivel');
+            reiniciarJogo();
+        }
+
+        criarGrade();
+        renderizarDicas();
+    </script>
+</body>
+</html>
