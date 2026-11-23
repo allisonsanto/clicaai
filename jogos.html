@@ -29,11 +29,13 @@
                     <h2 class="titulo-secao" style="margin-bottom: 0;">Palavras Cruzadas: Conheça Óbidos</h2>
                     <button onclick="reiniciarJogo()" class="btn-secundario">Reiniciar Jogo</button>
                 </div>
-                <p class="subtitulo-jogo">Preencha os quadrados usando as dicas. Quando uma palavra estiver completa e correta, ela ganhará destaque em verde!</p>
+                <p class="subtitulo-jogo">Preencha os quadrados abaixo usando as dicas. Quando uma palavra estiver completa e correta, ela ficará destacada em verde!</p>
 
                 <div class="area-cruzadinha">
-                    <div id="grade-cruzadinha" class="grade grade-13"></div>
+                    <!-- Grade gerada via JavaScript -->
+                    <div id="grade-cruzadinha" class="grade"></div>
 
+                    <!-- Lista de Dicas -->
                     <div class="painel-dicas">
                         <div class="grupo-dicas">
                             <h3>Horizontais</h3>
@@ -64,72 +66,29 @@
     </div>
 
     <script>
+        // Definição das 10 palavras e suas coordenadas (linha, coluna) em grade 12x12
         const palavras = [
-            // 1. CARNAPAUXIS (H, r=1, c=0..10): C(0) A(1) R(2) N(3) A(4) P(5) A(6) U(7) X(8) I(9) S(10)
             { num: 1, palavra: "CARNAPAUXIS", dir: "H", r: 1, c: 0, dica: "O maior e mais tradicional carnaval de rua do oeste do Pará." },
-
-            // 2. PAUXIS (V, r=1..6, c=5): (1,5)=P, (2,5)=A, (3,5)=U, (4,5)=X, (5,5)=I, (6,5)=S
-            { num: 2, palavra: "PAUXIS", dir: "V", r: 1, c: 5, dica: "Povo indígena que deu nome à antiga fortaleza e aos nativos da cidade." },
-
-            // 3. AMAZONAS (H, r=2, c=5..12): (2,5)=A, (2,6)=M, (2,7)=A, (2,8)=Z, (2,9)=O, (2,10)=N, (2,11)=A, (2,12)=S
-            { num: 3, palavra: "AMAZONAS", dir: "H", r: 2, c: 5, dica: "O grande rio que banha a frente da cidade de Óbidos." },
-
-            // 4. SANTANA (H, r=6, c=5..11): (6,5)=S, (6,6)=A, (6,7)=N, (6,8)=T, (6,9)=A, (6,10)=N, (6,11)=A
-            { num: 4, palavra: "SANTANA", dir: "H", r: 6, c: 5, dica: "Padroeira de Óbidos, celebrada com grande festividade em julho." },
-
-            // 5. FOBODROMO (V, r=0..8, c=1): (0,1)=F, (1,1)=O? Em (1,1) está 'A'. Vamos colocar FOBODROMO em (1,0)=C? Não.
-            // Vamos colocar FOBODROMO horizontal em r=8, c=2..10: F(2) O(3) B(4) O(5) D(6) R(7) O(8) M(9) O(10)
-            { num: 5, palavra: "FOBODROMO", dir: "H", r: 8, c: 2, dica: "Local oficial de concentração dos blocos no carnaval obidense." },
-
-            // 6. GARGANTA (V, r=1..8, c=7): (1,7)=U? Em (1,7) está 'U'. Vamos colocar GARGANTA vertical em c=11, r=2..9:
-            // (2,11)=A? Em AMAZONAS (2,11) é 'A'.
-            // Vamos colocar GARGANTA vertical em c=8, r=1..8: (1,8)=X? Em CARNAPAUXIS (1,8) é 'X'.
-            // Que tal GARGANTA vertical em c=8, r=2..9? (2,8)=Z? Em AMAZONAS (2,8) é 'Z'.
-            // Que tal GARGANTA vertical em c=10, r=2..9? (2,10)=N? Em AMAZONAS (2,10) é 'N'.
-            // Que tal GARGANTA horizontal em r=4, c=1..8: G(1) A(2) R(3) G(4) A(5) N(6) T(7) A(8) -> em (4,5) está 'X' de PAUXIS.
-            // Vamos colocar GARGANTA horizontal em r=3, c=5..12: G(5) A(6) R(7) G(8) A(9) N(10) T(11) A(12) -> em (3,5) está 'U' de PAUXIS.
-            // Vamos colocar GARGANTA vertical em c=11, r=0..7? (2,11)='A' de AMAZONAS, (6,11)='A' de SANTANA!
-            // G-A-R-G-A-N-T-A nas linhas 1..8, col 11: (1,11)=G, (2,11)=A [AMAZONAS], (3,11)=R, (4,11)=G, (5,11)=A, (6,11)=N? Em SANTANA (6,11) é 'A'.
-            // E se SANTANA for r=6, c=4..10? (6,10)=N! Então GARGANTA vertical em c=10, r=1..8:
-            // (1,10)=S? Em CARNAPAUXIS (1,10) é 'S'.
-            // Vamos usar GARGANTA vertical em c=7, r=2..9: (2,7)=A [AMAZONAS] -> G(1,7)? Não, G-A-R-G-A-N-T-A: se (2,7)='A' (segunda letra de GARGANTA), começa em r=1, c=7:
-            // (1,7)=G? Em CARNAPAUXIS (1,7) é 'U'.
-            // Se começar em r=0, c=7: (0,7)=G, (1,7)=A? Não, (1,7)='U'.
-            // Vamos colocar GARGANTA vertical em c=12, r=2..9: (2,12)=S [AMAZONAS].
-            // Vamos colocar GARGANTA horizontal em r=10, c=2..9: G(2) A(3) R(4) G(5) A(6) N(7) T(8) A(9)
-            { num: 6, palavra: "GARGANTA", dir: "H", r: 10, c: 2, dica: "Trecho mais estreito e profundo do rio Amazonas, situado em Óbidos." },
-
-            // 7. SERRA (V, r=6..10, c=7): (6,7)=N [SANTANA]. Se SERRA começar em r=6, c=7: (6,7)=S? Em SANTANA (6,7) é 'N'.
-            // Se SERRA começar em r=6, c=9: (6,9)=A? Não. Se SERRA for horizontal em r=11, c=3..7: S(3) E(4) R(5) R(6) A(7)
-            { num: 7, palavra: "SERRA", dir: "H", r: 11, c: 3, dica: "Formação da Escama, um dos mirantes mais famosos do município." },
-
-            // 8. CACAU (H, r=12, c=4..8): C(4) A(5) C(6) A(7) U(8)
-            { num: 8, palavra: "CACAU", dir: "H", r: 12, c: 4, dica: "Fruto histórico da região e tema de famoso romance de Inglês de Sousa." },
-
-            // 9. FORTE (V, r=8..12, c=4): (8,4)=B [FOBODROMO]. Se FORTE começar em r=8, c=4: (8,4)=F? Não.
-            // Se FORTE for vertical em c=2, r=1..5: (1,2)=R [CARNAPAUXIS].
-            // Se FORTE for vertical em c=4, r=1..5: (1,4)=A [CARNAPAUXIS].
-            // Vamos colocar FORTE vertical em c=0, r=1..5: (1,0)=C [CARNAPAUXIS].
-            // Vamos colocar FORTE horizontal em r=4, c=0..4: F(0) O(1) R(2) T(3) E(4)
-            { num: 9, palavra: "FORTE", dir: "H", r: 4, c: 0, dica: "Construção histórica que deu origem ao município em 1697." },
-
-            // 10. MUSEU (V, r=2..6, c=6): (2,6)=M [AMAZONAS!], (3,6)=U, (4,6)=S, (5,6)=E, (6,6)=A? Em SANTANA (6,6) é 'A'.
-            // Se MUSEU for vertical em c=6, r=2..6, ajustamos SANTANA para r=6, c=0..6:
-            // SANTANA (6,0)=S (6,1)=A (6,2)=N (6,3)=T (6,4)=A (6,5)=N (6,6)=A? Em MUSEU (6,6) é 'U'.
-            // Se MUSEU for horizontal em r=5, c=1..5: M(1) U(2) S(3) E(4) U(5) -> em (5,5) está 'I' de PAUXIS.
-            // Se MUSEU for horizontal em r=3, c=1..5: M(1) U(2) S(3) E(4) U(5) -> em (3,5) está 'U' de PAUXIS! (3,5)='U' coincide com a última letra de MUSEU!
-            { num: 10, palavra: "MUSEU", dir: "H", r: 3, c: 1, dica: "Espaço integrado que preserva a memória histórica e cultural obidense." }
+            { num: 2, palavra: "FOBODROMO",   dir: "V", r: 0, c: 2, dica: "Local oficial de concentração dos blocos no carnaval obidense." },
+            { num: 3, palavra: "PAUXIS",      dir: "V", r: 1, c: 5, dica: "Povo indígena que deu nome à antiga fortaleza e aos nativos da cidade." },
+            { num: 4, palavra: "AMAZONAS",    dir: "H", r: 3, c: 1, dica: "O grande rio que banha a frente da cidade de Óbidos." },
+            { num: 5, palavra: "GARGANTA",    dir: "V", r: 2, c: 7, dica: "Trecho mais estreito e profundo do rio Amazonas, situado em Óbidos." },
+            { num: 6, palavra: "SANTANA",     dir: "H", r: 5, c: 2, dica: "Padroeira de Óbidos, celebrada com grande festividade em julho." },
+            { num: 7, palavra: "SERRA",       dir: "V", r: 5, c: 2, dica: "Formação da Escama, um dos mirantes mais famosos do município." },
+            { num: 8, palavra: "CACAU",       dir: "H", r: 7, c: 0, dica: "Fruto histórico da região e tema de famoso romance de Inglês de Sousa." },
+            { num: 9, palavra: "FORTE",       dir: "H", r: 9, c: 1, dica: "Construção histórica que deu origem ao município em 1697." },
+            { num: 10, palavra: "MUSEU",      dir: "V", r: 6, c: 4, dica: "Espaço integrado que preserva a memória histórica e cultural obidense." }
         ];
 
-        const LINHAS = 13;
-        const COLUNAS = 13;
+        const LINHAS = 11;
+        const COLUNAS = 11;
         const gradeEl = document.getElementById('grade-cruzadinha');
         const inputsMatriz = Array.from({ length: LINHAS }, () => Array(COLUNAS).fill(null));
         const numerosCelula = {};
-        const celulasAtivas = {};
         let direcaoAtual = "H";
 
-        // Mapeia letras e valida se não há conflito entre palavras que se cruzam
+        // Mapeia células ativas e numeração inicial
+        const celulasAtivas = {};
         palavras.forEach(p => {
             const chaveNum = `${p.r}-${p.c}`;
             if (!numerosCelula[chaveNum]) numerosCelula[chaveNum] = [];
@@ -138,16 +97,11 @@
             for (let i = 0; i < p.palavra.length; i++) {
                 const r = p.dir === "H" ? p.r : p.r + i;
                 const c = p.dir === "H" ? p.c + i : p.c;
-                const chave = `${r}-${c}`;
-                const letra = p.palavra[i];
-
-                if (celulasAtivas[chave] && celulasAtivas[chave] !== letra) {
-                    console.warn(`Conflito em (${r},${c}): '${celulasAtivas[chave]}' vs '${letra}' na palavra ${p.palavra}`);
-                }
-                celulasAtivas[chave] = letra;
+                celulasAtivas[`${r}-${c}`] = p.palavra[i];
             }
         });
 
+        // Monta a grade visual
         function criarGrade() {
             gradeEl.innerHTML = '';
             for (let r = 0; r < LINHAS; r++) {
@@ -187,6 +141,7 @@
             }
         }
 
+        // Renderiza as listas de dicas
         function renderizarDicas() {
             const listaH = document.getElementById('dicas-h');
             const listaV = document.getElementById('dicas-v');
@@ -206,6 +161,7 @@
             });
         }
 
+        // Ajusta direção automática ao clicar em uma célula
         function detectarDirecao(r, c) {
             const temH = (c + 1 < COLUNAS && inputsMatriz[r][c + 1]) || (c - 1 >= 0 && inputsMatriz[r][c - 1]);
             const temV = (r + 1 < LINHAS && inputsMatriz[r + 1][c]) || (r - 1 >= 0 && inputsMatriz[r - 1][c]);
@@ -213,6 +169,7 @@
             if (temV && !temH) direcaoAtual = "V";
         }
 
+        // Normaliza acentos (ex: Á -> A)
         function normalizarLetra(str) {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z]/g, '');
         }
@@ -220,7 +177,10 @@
         function aoDigitar(e, r, c) {
             const letra = normalizarLetra(e.target.value);
             e.target.value = letra;
-            if (letra) avancarCursor(r, c);
+
+            if (letra) {
+                avancarCursor(r, c);
+            }
             verificarPalavras();
         }
 
@@ -258,7 +218,9 @@
             }
         }
 
+        // Verifica palavras corretas, aplica destaque e checa vitória
         function verificarPalavras() {
+            // Limpa destaques anteriores antes de reavaliar
             document.querySelectorAll('.celula.correta').forEach(el => el.classList.remove('correta'));
             document.querySelectorAll('.painel-dicas li.riscada').forEach(el => el.classList.remove('riscada'));
 
