@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Óbidos - Início</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="img/logo.png" alt="Logo Óbidos PA">
+            <span>ÓBIDOS PA</span>
+        </div>
+        <ul>
+            <li><a href="index.html" class="ativo">Início</a></li>
+            <li><a href="mapa.html">Mapa de Óbidos</a></li>
+            <li><a href="historias.html">Histórias</a></li>
+            <li><a href="cultural.html">Mapa Cultural</a></li>
+            <li><a href="livros.html">Mapa de Livros</a></li>
+        </ul>
+    </nav>
+
+    <div class="wrapper">
+        <main>
+            <header class="banner">
+                <img src="img/banner.jpg" alt="Banner Portal Óbidos">
+            </header>
+
+            <!-- Galeria de Destaques -->
+            <section class="card-secao">
+                <h2 class="titulo-secao">Destaques da Semana</h2>
+                <div class="galeria-container">
+                    <div class="item-principal">
+                        <a href="cultural.html">
+                            <img id="foto-grande" src="" alt="Destaque Principal">
+                        </a>
+                        <p id="texto-descricao" class="descricao"></p>
+                    </div>
+
+                    <div class="lista-miniaturas" id="container-miniaturas"></div>
+                </div>
+            </section>
+
+            <!-- Cards de Exploração -->
+            <section class="grid-destaques">
+                <article class="card-info">
+                    <img src="[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10)" alt="Carnapauxis">
+                    <div class="card-conteudo">
+                        <h3>Carnapauxis</h3>
+                        <p>O maior e mais tradicional carnaval de rua do oeste do Pará. Conhecido como a "Festa do Mascarado Fobó", atrai milhares de foliões pelas ruas históricas até o Fobódromo.</p>
+                        <a href="cultural.html" class="btn-primario">Explorar Mapa Cultural</a>
+                    </div>
+                </article>
+
+                <article class="card-info">
+                    <img src="[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmbnXuJ4RI290gftD2w20wImmPGcwQ4x_1faCXU0YJQQ&s](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmbnXuJ4RI290gftD2w20wImmPGcwQ4x_1faCXU0YJQQ&s)" alt="Livro O Cacaulista">
+                    <div class="card-conteudo">
+                        <h3>O Cacaulista</h3>
+                        <p>Obra-prima do naturalismo brasileiro escrita pelo obidense Inglês de Sousa. Destaca-se pela narrativa regionalista e pela rivalidade entre Miguel e o Tenente Ribeiro.</p>
+                        <a href="livros.html" class="btn-primario">Explorar Mapa de Livros</a>
+                    </div>
+                </article>
+            </section>
+        </main>
+
+        <footer class="rodape">
+            <p>&copy; 2026 - Todos os direitos reservados a @Allison Santos e @Marcela Queiroz.</p>
+        </footer>
+    </div>
+
+    <script>
+        const atualizacoes = [
+            {
+                img: "[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10)",
+                texto: "O Carnapauxis é o maior e mais tradicional carnaval de rua do oeste do Pará."
+            },
+            {
+                img: "[https://www.agenciapara.com.br/midias/2018/pequenas/a8ce8212-23c7-46af-bde9-1deb50188103.jpg](https://www.agenciapara.com.br/midias/2018/pequenas/a8ce8212-23c7-46af-bde9-1deb50188103.jpg)",
+                texto: "Confira o segundo destaque da semana repleto de novidades e fotos exclusivas do evento."
+            },
+            {
+                img: "[https://www.obidos.net.br/images/stories/carnaval/2022/01-carnapauxis/06-1-morro.jpg](https://www.obidos.net.br/images/stories/carnaval/2022/01-carnapauxis/06-1-morro.jpg)",
+                texto: "Lançamento do novo recurso da plataforma que promete otimizar o tempo de carregamento."
+            },
+            {
+                img: "[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAl_50PuVawl0DIwdwSKiKkjj6mSo-ox8QnaOz7AuNEi0bZ9RYLM495WY_&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAl_50PuVawl0DIwdwSKiKkjj6mSo-ox8QnaOz7AuNEi0bZ9RYLM495WY_&s=10)",
+                texto: "Dicas essenciais de design responsivo para melhorar a experiência do usuário mobile."
+            }
+        ];
+
+        let indiceAtual = 0;
+        const fotoGrande = document.getElementById('foto-grande');
+        const textoDescricao = document.getElementById('texto-descricao');
+        const containerMiniaturas = document.getElementById('container-miniaturas');
+
+        function renderizarGaleria() {
+            fotoGrande.src = atualizacoes[indiceAtual].img;
+            textoDescricao.textContent = atualizacoes[indiceAtual].texto;
+
+            containerMiniaturas.innerHTML = '';
+            for (let i = 1; i <= 3; i++) {
+                const idx = (indiceAtual + i) % atualizacoes.length;
+                const img = document.createElement('img');
+                img.src = atualizacoes[idx].img;
+                img.alt = `Miniatura ${i}`;
+                img.className = 'mini-item';
+                img.onclick = () => {
+                    indiceAtual = idx;
+                    renderizarGaleria();
+                    reiniciarTimer();
+                };
+                containerMiniaturas.appendChild(img);
+            }
+        }
+
+        let timer = setInterval(() => {
+            indiceAtual = (indiceAtual + 1) % atualizacoes.length;
+            renderizarGaleria();
+        }, 8000);
+
+        function reiniciarTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                indiceAtual = (indiceAtual + 1) % atualizacoes.length;
+                renderizarGaleria();
+            }, 8000);
+        }
+
+        renderizarGaleria();
+    </script>
+</body>
+</html>
