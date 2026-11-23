@@ -50,7 +50,7 @@ body {
     width: 90px;
     height: 90px;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: 25%;
     border: 3px solid var(--cor-destaque);
 }
 
@@ -295,3 +295,4 @@ main {
         height: 75px;
     }
 }
+
