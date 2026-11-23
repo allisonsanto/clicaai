@@ -7,10 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav>
-        <div class="logo"><img src="img/logo.png" style="width:100%; border-radius:200px">ÓBIDOS PA</div>
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="img/logo.png" alt="Logo Óbidos PA">
+            <span>ÓBIDOS PA</span>
+        </div>
         <ul>
-            <li><a href="index.html">Início</a></li>
+            <li><a href="index.html" class="ativo">Início</a></li>
             <li><a href="mapa.html">Mapa de Óbidos</a></li>
             <li><a href="historias.html">Histórias</a></li>
             <li><a href="cultural.html">Mapa Cultural</a></li>
@@ -18,120 +21,113 @@
         </ul>
     </nav>
 
-    <main>
-        <img src="img/banner.jpg" style="width:100%; border-radius:4px">
-        <section class="hero">
-    <div class="galeria-container">
-        <!-- Destaque Principal -->
-        <div class="item-principal">
-            <a href="cultural.html"><img id="foto-grande" src="" alt="Destaque"></a>
-            <div id="texto-descricao" class="descricao"></div>
-        </div>
+    <div class="wrapper">
+        <main>
+            <header class="banner">
+                <img src="img/banner.jpg" alt="Banner Portal Óbidos">
+            </header>
 
-        <!-- Miniaturas ao lado -->
-        <div class="lista-miniaturas">
-            <img class="mini-item" id="mini-0" onclick="mudarDestaque(0)" src="" alt="Miniatura 1">
-            <img class="mini-item" id="mini-1" onclick="mudarDestaque(1)" src="" alt="Miniatura 2">
-            <img class="mini-item" id="mini-2" onclick="mudarDestaque(2)" src="" alt="Miniatura 3">
-        </div>
+            <!-- Galeria de Destaques -->
+            <section class="card-secao">
+                <h2 class="titulo-secao">Destaques da Semana</h2>
+                <div class="galeria-container">
+                    <div class="item-principal">
+                        <a href="cultural.html">
+                            <img id="foto-grande" src="" alt="Destaque Principal">
+                        </a>
+                        <p id="texto-descricao" class="descricao"></p>
+                    </div>
+
+                    <div class="lista-miniaturas" id="container-miniaturas"></div>
+                </div>
+            </section>
+
+            <!-- Cards de Exploração -->
+            <section class="grid-destaques">
+                <article class="card-info">
+                    <img src="[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10)" alt="Carnapauxis">
+                    <div class="card-conteudo">
+                        <h3>Carnapauxis</h3>
+                        <p>O maior e mais tradicional carnaval de rua do oeste do Pará. Conhecido como a "Festa do Mascarado Fobó", atrai milhares de foliões pelas ruas históricas até o Fobódromo.</p>
+                        <a href="cultural.html" class="btn-primario">Explorar Mapa Cultural</a>
+                    </div>
+                </article>
+
+                <article class="card-info">
+                    <img src="[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmbnXuJ4RI290gftD2w20wImmPGcwQ4x_1faCXU0YJQQ&s](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmbnXuJ4RI290gftD2w20wImmPGcwQ4x_1faCXU0YJQQ&s)" alt="Livro O Cacaulista">
+                    <div class="card-conteudo">
+                        <h3>O Cacaulista</h3>
+                        <p>Obra-prima do naturalismo brasileiro escrita pelo obidense Inglês de Sousa. Destaca-se pela narrativa regionalista e pela rivalidade entre Miguel e o Tenente Ribeiro.</p>
+                        <a href="livros.html" class="btn-primario">Explorar Mapa de Livros</a>
+                    </div>
+                </article>
+            </section>
+        </main>
+
+        <footer class="rodape">
+            <p>&copy; 2026 - Todos os direitos reservados a @Allison Santos e @Marcela Queiroz.</p>
+        </footer>
     </div>
 
     <script>
-        // Dados das atualizações (Substitua as URLs das imagens e os textos)
         const atualizacoes = [
             {
-                img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10",
+                img: "[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10)",
                 texto: "O Carnapauxis é o maior e mais tradicional carnaval de rua do oeste do Pará."
             },
             {
-                img: "https://www.agenciapara.com.br/midias/2018/pequenas/a8ce8212-23c7-46af-bde9-1deb50188103.jpg",
+                img: "[https://www.agenciapara.com.br/midias/2018/pequenas/a8ce8212-23c7-46af-bde9-1deb50188103.jpg](https://www.agenciapara.com.br/midias/2018/pequenas/a8ce8212-23c7-46af-bde9-1deb50188103.jpg)",
                 texto: "Confira o segundo destaque da semana repleto de novidades e fotos exclusivas do evento."
             },
             {
-                img: "https://www.obidos.net.br/images/stories/carnaval/2022/01-carnapauxis/06-1-morro.jpg",
+                img: "[https://www.obidos.net.br/images/stories/carnaval/2022/01-carnapauxis/06-1-morro.jpg](https://www.obidos.net.br/images/stories/carnaval/2022/01-carnapauxis/06-1-morro.jpg)",
                 texto: "Lançamento do novo recurso da plataforma que promete otimizar o tempo de carregamento."
             },
             {
-                img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAl_50PuVawl0DIwdwSKiKkjj6mSo-ox8QnaOz7AuNEi0bZ9RYLM495WY_&s=10",
+                img: "[https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAl_50PuVawl0DIwdwSKiKkjj6mSo-ox8QnaOz7AuNEi0bZ9RYLM495WY_&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAl_50PuVawl0DIwdwSKiKkjj6mSo-ox8QnaOz7AuNEi0bZ9RYLM495WY_&s=10)",
                 texto: "Dicas essenciais de design responsivo para melhorar a experiência do usuário mobile."
             }
         ];
 
-        // Renderiza as fotos e textos nas posições corretas
-        function atualizarGaleria() {
-            // Define o item 0 como o grande
-            document.getElementById('foto-grande').src = atualizacoes[0].img;
-            document.getElementById('texto-descricao').innerText = atualizacoes[0].texto;
+        let indiceAtual = 0;
+        const fotoGrande = document.getElementById('foto-grande');
+        const textoDescricao = document.getElementById('texto-descricao');
+        const containerMiniaturas = document.getElementById('container-miniaturas');
 
-            // Define os itens 1, 2 e 3 como as miniaturas ao lado
-            for (let i = 0; i < 3; i++) {
-                document.getElementById(`mini-${i}`).src = atualizacoes[i + 1].img;
+        function renderizarGaleria() {
+            fotoGrande.src = atualizacoes[indiceAtual].img;
+            textoDescricao.textContent = atualizacoes[indiceAtual].texto;
+
+            containerMiniaturas.innerHTML = '';
+            for (let i = 1; i <= 3; i++) {
+                const idx = (indiceAtual + i) % atualizacoes.length;
+                const img = document.createElement('img');
+                img.src = atualizacoes[idx].img;
+                img.alt = `Miniatura ${i}`;
+                img.className = 'mini-item';
+                img.onclick = () => {
+                    indiceAtual = idx;
+                    renderizarGaleria();
+                    reiniciarTimer();
+                };
+                containerMiniaturas.appendChild(img);
             }
         }
 
-        // Faz a rotação empurrando o primeiro item para o final da fila
-        function rotacionarItens() {
-            const primeiroItem = atualizacoes.shift(); // Remove o primeiro (grande)
-            atualizacoes.push(primeiroItem);           // Coloca no final da fila (vira a última miniatura)
-            atualizarGaleria();
+        let timer = setInterval(() => {
+            indiceAtual = (indiceAtual + 1) % atualizacoes.length;
+            renderizarGaleria();
+        }, 8000);
+
+        function reiniciarTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                indiceAtual = (indiceAtual + 1) % atualizacoes.length;
+                renderizarGaleria();
+            }, 8000);
         }
 
-        // Permite clicar na miniatura para ver o destaque imediatamente
-        function mudarDestaque(indexMiniatura) {
-            clearInterval(intervalo); // Pausa o tempo atual
-            
-            // Move os itens necessários para o topo com base no clique
-            for (let i = 0; i <= indexMiniatura; i++) {
-                const item = atualizacoes.shift();
-                atualizacoes.push(item);
-            }
-            
-            atualizarGaleria();
-            intervalo = setInterval(rotacionarItens, 10000); // Reinicia o cronômetro
-        }
-
-        // Inicializa a exibição
-        atualizarGaleria();
-
-        // Configura a troca automática para cada 10 segundos (10000 milissegundos)
-        let intervalo = setInterval(rotacionarItens, 10000);
+        renderizarGaleria();
     </script>
-        </section>
-
-<br></br>
-<section class="hero">
-    <div class="duas-colunas">
-  <div class="coluna coluna-esquerda">
-
-<div class="img-text">
-  <!-- Atributo alt garante acessibilidade e fallback -->
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk9Oj4J-eqgiexXXTZnJ2licqAcqu3As_C1zG_Kwh8icPpASXfsVUaIrFg&s=10" alt="Exemplo de imagem">
-  <p>
-O Carnapauxis é o maior e mais tradicional carnaval de rua do oeste do Pará, realizado na cidade de Óbidos. Conhecido como a "Festa do Mascarado Fobó", 
-o evento atrai milhares de foliões pelas estreitas ruas históricas da cidade. A folia conta com o desfile de diversos blocos carnavalescos e tem o Fobódromo como ponto central de concentração.
-  </p><a href="cultural.html">Mapa Cultural</a>
-</div>
-  </div>
-
-  <div class="coluna">
-<div class="img-text">
-  <!-- Atributo alt garante acessibilidade e fallback -->
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmbnXuJ4RI290gftD2w20wImmPGcwQ4x_1faCXU0YJQQ&s" alt="Exemplo de imagem">
-  <p>
-   "O Cacaulista" é um romance que se destaca pela sua narrativa regionalista e pela rivalidade entre os personagens Miguel e o Tenente Ribeiro.
-      A obra é uma obra-prima do naturalismo brasileiro, escrita por Inglês de Sousa, e é considerada uma das melhores produções literárias da autoria.
-  </p><a href="livros.html">Mapa de Livros</a>
-</div>
-  </div>
-</div>
-</section>
-        
-    <footer class="rodape-fixo">
-        <p>&copy; 2026 - Todos os direitos reservados a @Allison Santos e @Marcela Queiroz.</p>
-    </footer>
-        
-    </main>
-    
 </body>
-    
 </html>
