@@ -337,8 +337,8 @@ main {
 /* Grade 11x11 */
 .grade {
     display: grid;
-    grid-template-columns: repeat(11, 40px);
-    grid-template-rows: repeat(11, 40px);
+    grid-template-columns: repeat(12, 40px);
+    grid-template-rows: repeat(14, 40px);
     gap: 3px;
     background-color: #cbd5e0;
     padding: 6px;
