@@ -329,28 +329,39 @@ main {
 
 .area-cruzadinha {
     display: flex;
-    gap: 35px;
+    gap: 28px;
     align-items: flex-start;
     flex-wrap: wrap;
+}
+
+.grade-wrapper {
+    flex: 0 0 auto;
+    max-width: 100%;
+    min-width: 0;
 }
 
 /* Grade 11x11 */
 .grade {
     display: grid;
-    grid-template-columns: repeat(12, 40px);
-    grid-template-rows: repeat(14, 40px);
-    gap: 3px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    width: min(100%, 468px); /* 13 * 36px no desktop, adapta ao celular */
+    aspect-ratio: 1 / 1;
+    gap: 2px;
     background-color: #cbd5e0;
-    padding: 6px;
+    padding: 4px;
     border-radius: 10px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 .celula {
     position: relative;
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    border-radius: 3px;
+    overflow: hidden;
 }
 
 .celula.bloqueada {
@@ -364,13 +375,17 @@ main {
 }
 
 .celula.ativa input {
+    display: block;
     width: 100%;
     height: 100%;
+    min-width: 0;
+    padding: 0;
     border: none;
     background: transparent;
     text-align: center;
-    font-size: 1.15rem;
+    font-size: clamp(0.75rem, 3.2vw, 1.15rem);
     font-weight: 700;
+    line-height: 1;
     color: var(--cor-primaria);
     text-transform: uppercase;
     outline: none;
@@ -506,11 +521,16 @@ main {
 }
 
 /* Ajuste da grade em telas pequenas */
-@media (max-width: 540px) {
+@media (max-width: 768px) {
+    .area-cruzadinha {
+        flex-direction: column;
+        gap: 20px;
+    }
     .grade {
-        grid-template-columns: repeat(11, 28px);
-        grid-template-rows: repeat(11, 28px);
-        gap: 2px;
+        width: 100%;
+        max-width: 100%;
+        gap: 1.5px;
+        padding: 3px;
     }
     .celula {
         width: 28px;
