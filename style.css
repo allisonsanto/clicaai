@@ -524,7 +524,7 @@ main {
 @media (max-width: 768px) {
     .area-cruzadinha {
         flex-direction: column;
-        gap: auto;
+        gap: 80px;
     }
     .grade {
         width: 100%;
